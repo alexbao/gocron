@@ -132,23 +132,24 @@ func (j *Job) At(t string) *Job {
 		panic("time format error.")
 	}
 	// time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
-	mock := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), int(hour), int(min), 0, 0, loc)
+	now := time.Now().In(loc)
+	mock := time.Date(now.Year(), now.Month(), now.Day(), int(hour), int(min), 0, 0, loc)
 
 	if j.unit == "days" {
-		if time.Now().After(mock) {
+		if now.After(mock) {
 			j.lastRun = mock
 		} else {
-			j.lastRun = time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day()-1, hour, min, 0, 0, loc)
+			j.lastRun = time.Date(now.Year(), now.Month(), now.Day()-1, hour, min, 0, 0, loc)
 		}
 	} else if j.unit == "weeks" {
-		if time.Now().After(mock) {
+		if now.After(mock) {
 			i := mock.Weekday() - j.startDay
 			if i < 0 {
 				i = 7 + i
 			}
-			j.lastRun = time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day()-int(i), hour, min, 0, 0, loc)
+			j.lastRun = time.Date(now.Year(), now.Month(), now.Day()-int(i), hour, min, 0, 0, loc)
 		} else {
-			j.lastRun = time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day()-7, hour, min, 0, 0, loc)
+			j.lastRun = time.Date(now.Year(), now.Month(), now.Day()-7, hour, min, 0, 0, loc)
 		}
 	}
 	return j
